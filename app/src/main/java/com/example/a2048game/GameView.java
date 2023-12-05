@@ -62,7 +62,7 @@ public class GameView extends GridLayout {
     }
 
     /*
-     * 监听Touch事件
+     * Monitoring the touch event to move the tiles
      */
     private void setListener(){
         setOnTouchListener(new OnTouchListener() {
@@ -80,9 +80,9 @@ public class GameView extends GridLayout {
                         endX = event.getX();
                         endY = event.getY();
 
-                        boolean swiped = false;//记录是否有效滑动了
+                        boolean swiped = false;//record the event and see if it is correctly swiped
 
-                        //水平移动更多
+                        //move more horizontally
                         if(Math.abs(endX - staX) > Math.abs(endY - staY)){
                             if(endX - staX > 10){
                                 if(swipeRight()){
@@ -107,7 +107,7 @@ public class GameView extends GridLayout {
                                 }
                             }
                         }
-                        //滑动后创建新块，并检查当前状态是否能滑动
+                        //create new tile after swipe the tiles
                         if(swiped){
                             randomCreateCard(1);
                             if(!canSwipe()){
@@ -122,36 +122,39 @@ public class GameView extends GridLayout {
     }
 
     /*
-     * 返回该次滑动是否有效（有卡片移动或合并）
+     * return the result and see if the tile valid（any tile move or combined）
      */
     private boolean swipeUp(){
         boolean flag = false;
         for(int j = 0; j < 4; ++j){
             int ind = 0;
-            //从上往下依次处理
+            //process it from up to down
             for(int i = 1; i < 4; ++i){
-                //如果是存在数字的，往上遍历
+                //if there is a number, cal it up
+                //there is only 4x4 tiles, so i should be always smaller than 4 if swipe and cal
                 if(cards[i][j].getNum() != 0){
                     for(int ii = i - 1; ii >= ind; --ii){
-                        //如果这块是空的，将数字上移
+                        //if the space is empty, move the number going up
                         if(cards[ii][j].getNum() == 0){
                             cards[ii][j].setNum(cards[i][j].getNum());
                             cards[i][j].setNum(0);
-                            i--;//上移
+                            i--;//move up
                             flag = true;
                         }
-                        //如果这块是相同的数，合并，合并的块不能一下合并两次，更新ind，不再遍历合并的块
+                        //If two tiles contain same number, combine it
+                        // combined tiles cannot combine twice at one action
+                        // renew ind and do not cal the combined tiles
                         else if(cards[ii][j].getNum() == cards[i][j].getNum()){
                             cards[ii][j].setNum((cards[i][j].getNum() * 2));
                             cards[i][j].setNum(0);
                             flag = true;
-                            ind = ii + 1;//已经合过，该点不再合成
+                            ind = ii + 1;//if tile combined, no need to combine again
                             MainActivity.mainActivity.addScore(cards[ii][j].getNum() / 2);
-                            //播放合并动画
+                            //play the tile combine animation
                             playMergeAnimation(ii, j);
                             break;
                         }
-                        //上面的块数字不同，退出循环
+                        //If the tile contain different number, break the loop
                         else break;
                     }
                 }
@@ -251,7 +254,8 @@ public class GameView extends GridLayout {
     }
 
     /**
-     *如果存在空白块，或者相邻的数字相同的块，则可以继续滑动
+     *If the game board contain space, or tiles with the same number nearby
+     * Then User able to keep swipe and continue the game
      */
     private boolean canSwipe(){
         for(int i = 0; i < 4; ++i){
@@ -282,26 +286,25 @@ public class GameView extends GridLayout {
     }
 
     private void gameOver(){
-        Toast.makeText(getContext(), "游戏结束", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Game Over, Nice Try!", Toast.LENGTH_SHORT).show();
     }
 
     private int GetCardWidth() {
-        //获取屏幕信息
+        //Get the monitor information
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        //根据布局，GameView是占屏幕宽度的90%，除以4就是卡片边长
+        //Makes the GameView Activity remain 90% of the monitor, and /4 to be the tiles width
         return (int)((displayMetrics.widthPixels * 0.9f) / 4);
     }
 
     /*
-     * 递归随机，玄学复杂度，期望递归次数小于 16 次，偷了个懒
-     * 最好是把可用方块加入到一个列表中，然后在列表中随机
+     * Random value for create the tile
      */
     private void randomCreateCard(int cnt){
         Random random = new Random();
         int r = random.nextInt(4);
         int c = random.nextInt(4);
 
-        //该处已经存在数字，重新随机r, c
+        //If the space already contain a number, randomized r & c
         if(cards[r][c].getNum() != 0){
             randomCreateCard(cnt);
             return;
@@ -314,7 +317,7 @@ public class GameView extends GridLayout {
 
         cards[r][c].setNum(rand);
 
-        //播放创建动画
+        //Play create Animation
         playCreateAnimation(r, c);
 
         if(cnt >= 2){
@@ -323,18 +326,18 @@ public class GameView extends GridLayout {
     }
 
     /*
-     * 播放创建新块动画
+     * Play the new created tile animation
      */
     private void playCreateAnimation(int r, int c){
         AnimationSet animationSet = new AnimationSet(true);
 
-        //旋转
+        //Rotate Animation
         RotateAnimation anim = new RotateAnimation(0,360,RotateAnimation.RELATIVE_TO_SELF,0.5f, RotateAnimation.RELATIVE_TO_SELF,0.5f);
-        anim.setDuration(250);
+        anim.setDuration(150);
         anim.setRepeatCount(0);
         anim.setInterpolator(new LinearInterpolator());
 
-        //缩放
+        //Zoom in-out animation
         ScaleAnimation anim2 = new ScaleAnimation(0,1,0,1,
                 Animation.RELATIVE_TO_SELF,0.5f,
                 Animation.RELATIVE_TO_SELF,0.5f
@@ -349,7 +352,7 @@ public class GameView extends GridLayout {
     }
 
     /*
-     * 播放合并动画
+     * Play the combine tile animation
      */
     private void playMergeAnimation(int r, int c){
         ScaleAnimation anim = new ScaleAnimation(1,1.2f,1,1.2f,

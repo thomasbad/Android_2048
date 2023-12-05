@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public void addScore(int score) {
         this.score += score;
         textScore.setText("Score : " + this.score);
-        //更新最高分
+        //Renew higher score
         updateHighestScore(this.score);
     }
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         if(score > highestScore){
             highestScore = score;
             textHighestScore.setText("HighestScore : " + score);
-            //存储最高分
+            //Save the highest score in the mobile as Preferences
             SharedPreferences shp = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
             SharedPreferences.Editor editor = shp.edit();
 
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         textHighestScore = findViewById(R.id.textHighestScore);
         buttonReplay = findViewById(R.id.buttonReplay);
 
-        //读取最高分
+        //Read the highest score and show it
         SharedPreferences shp = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
         highestScore = shp.getInt(HIGHEST_SCORE, 0);
         textHighestScore.setText("HighestScore : " + highestScore);
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if(msg.what == 0){
-                isExit = false;//修改状态为退出
+                isExit = false;//edit the status as exit
             }
         }
 
@@ -93,12 +93,12 @@ public class MainActivity extends AppCompatActivity {
     ExitHandler mHandler = new ExitHandler();
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) { //When click the 'back button', ask user if they want to quit
         if(keyCode == KeyEvent.KEYCODE_BACK){
             if(!isExit){
                 isExit = true;
-                Toast.makeText(this, "再按一次退出游戏", Toast.LENGTH_SHORT).show();
-                //延迟更改状态信息
+                Toast.makeText(this, "Push one more time to exit the game", Toast.LENGTH_SHORT).show();
+                //delay send empty message
                 mHandler.sendEmptyMessageDelayed(0, 2000);
             }
             else{

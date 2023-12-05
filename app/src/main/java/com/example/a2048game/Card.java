@@ -60,7 +60,9 @@ public class Card extends FrameLayout {
     public void setNum(int num) {
         this.num = num;
         textView.setText(num + "");
-        //数字改变时，同时改变改变字体大小和颜色
+        //When the number change
+        // change the text size and color regarding to the number
+        // to make sure it can all fit into the tile
         changeColor(num);
         changeSize(num);
     }

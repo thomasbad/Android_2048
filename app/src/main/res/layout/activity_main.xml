@@ -52,7 +52,6 @@
         android:text="@string/highest_score"
         android:textColor="@color/backgroundColor64"
         android:textSize="24sp"
-        android:textStyle="italic"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
